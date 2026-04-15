@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deep Link Intent PoC</title>
+</head>
+<body>
+    <h1>Testing Intent Redirection...</h1>
+    <script>
+        // পেজ লোড হওয়ার সাথে সাথে সেটিংস অ্যাপ খোলার চেষ্টা করবে
+        window.onload = function() {
+            window.location = "intent://settings/#Intent;scheme=android-app;package=com.android.settings;end";
+        };
+    </script>
+    <p>যদি কোনো ওয়ার্নিং ছাড়াই সেটিংস খুলে যায়, তবে Deep Link Handling এ সমস্যা আছে।</p>
+</body>
+</html>
