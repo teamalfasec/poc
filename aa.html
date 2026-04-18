@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deep Link Intent PoC</title>
+</head>
+<body>
+    <h1>Testing Intent Redirection...</h1>
+    <script>
+window.onload = function() {
+    // ক্যালকুলেটর অ্যাপ খোলার চেষ্টা (অনেকের ফোনে com.google.android.calculator থাকে)
+    window.location = "intent://#Intent;scheme=android-app;package=com.google.android.calculator;end";
+    
+    // অথবা সরাসরি ইউটিউব ওপেন করার চেষ্টা
+    // window.location = "intent://www.youtube.com/#Intent;scheme=http;package=com.google.android.youtube;end";
+};
+    </script>
+    <p>যদি কোনো ওয়ার্নিং ছাড়াই সেটিংস খুলে যায়, তবে Deep Link Handling এ সমস্যা আছে।</p>
+</body>
+</html>
