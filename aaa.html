@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced iOS Deep Link PoC</title>
+</head>
+<body>
+    <h1>Advanced Intent Redirection Test (iOS)</h1>
+    <p>Testing multiple app triggers...</p>
+
+    <script>
+        function triggerApp(url) {
+            const iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            
+            // সরাসরি উইন্ডো লোকেশন চেঞ্জ করার চেষ্টা
+            setTimeout(() => {
+                window.location = url;
+            }, 500);
+        }
+
+        window.onload = function() {
+            // ১. ফেসটাইম কল ট্রিগার করার চেষ্টা (সরাসরি ডায়াল প্যাড)
+            // triggerApp("facetime://user@example.com");
+
+            // ২. অ্যাপল ম্যাপস ওপেন করা
+            triggerApp("maps://");
+
+            // ৩. অ্যাপ স্টোর ওপেন করা
+            setTimeout(() => {
+                triggerApp("itms-apps://://apple.com");
+            }, 1000);
+
+            // ৪. মেইল অ্যাপ ওপেন করা
+            setTimeout(() => {
+                triggerApp("mailto:test@example.com");
+            }, 1500);
+        };
+    </script>
+
+    <hr>
+    <p><b>Note:</b> যদি কোনো ইউজার ইন্টারঅ্যাকশন (Click) ছাড়াই এগুলো কাজ করে, তবে এটি একটি সিকিউরিটি রিস্ক হিসেবে গণ্য হতে পারে।</p>
+</body>
+</html>
