@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>iOS App Redirection Chain PoC</title>
+</head>
+<body>
+  <h2>iOS App Redirection Chain Test</h2>
+  <p id="status">Starting...</p>
+
+  <script>
+    const status = document.getElementById('status');
+
+    function openApp(scheme, name, delay) {
+      setTimeout(() => {
+        status.innerText = "Attempting to open: " + name;
+        window.location.href = scheme;
+      }, delay);
+    }
+
+    window.onload = function () {
+      // 1. Apple Maps (after 1 sec)
+      openApp("maps://", "Apple Maps", 1000);
+
+      // 2. Gmail (after 6 sec)
+      openApp("googlegmail://co?to=test@example.com", "Gmail", 6000);
+
+      // 3. Telegram (after 11 sec)
+      openApp("tg://resolve?domain=telegram", "Telegram", 11000);
+
+      // 4. iOS Settings (after 16 sec)
+      openApp("app-settings:", "iOS Settings", 16000);
+    };
+  </script>
+
+  <p style="margin-top:40px;color:red;">
+    <b>Observe:</b><br>
+    - Does Firefox show a permission prompt like “Open in another app?”<br>
+    - Or does it automatically redirect to apps without user interaction?<br>
+    - Are multiple apps triggered sequentially without user consent?
+  </p>
+</body>
+</html>
