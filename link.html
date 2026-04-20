@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>iOS URL Scheme PoC</title>
+    <title>iOS Trigger Test</title>
+    <style>
+        button { padding: 20px; font-size: 20px; background: red; color: white; border: none; border-radius: 10px; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <h1>Testing iOS Deep Link...</h1>
+
+    <h2>Click to Test Multi-App Launch</h2>
+    <button onclick="startAttack()">Click to Open Apps</button>
 
     <script>
-        window.onload = function() {
-            window.location = "app-settings:";
+        function startAttack() {
+            // ১. অ্যাপল ম্যাপস
+            window.location.href = "maps://";
 
+            // ২. ১ সেকেন্ড পর জিমেইল (যদি ম্যাপস থেকে ফিরে আসেন)
+            setTimeout(() => {
+                window.location.href = "googlegmail://";
+            }, 1000);
 
-            // window.location = "maps://";
-        };
+            // ৩. ২ সেকেন্ড পর সেটিংস
+            setTimeout(() => {
+                window.location.href = "app-settings:";
+            }, 2000);
+        }
     </script>
 
-    <p>Testing iOS Deep Link...</p>
+    <p>ম্যাপস ওপেন হওয়ার পর দ্রুত আবার ব্রাউজারে ফিরে আসুন, দেখুন অটোমেটিক জিমেইল বা সেটিংস খুলে কি না।</p>
 </body>
 </html>
