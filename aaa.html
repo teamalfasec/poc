@@ -1,45 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced iOS Deep Link PoC</title>
+    <title>iOS App Chain PoC</title>
 </head>
 <body>
-    <h1>Advanced Intent Redirection Test (iOS)</h1>
-    <p>Testing multiple app triggers...</p>
+    <h1>Testing iOS App Redirection Chain...</h1>
+    <p id="status">Starting tests...</p>
 
     <script>
-        function triggerApp(url) {
-            const iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            iframe.src = url;
-            document.body.appendChild(iframe);
-            
-            // সরাসরি উইন্ডো লোকেশন চেঞ্জ করার চেষ্টা
+        const status = document.getElementById('status');
+
+        function openApp(scheme, name, delay) {
             setTimeout(() => {
-                window.location = url;
-            }, 500);
+                status.innerText = "Attempting to open: " + name;
+                window.location = scheme;
+            }, delay);
         }
 
         window.onload = function() {
-            // ১. ফেসটাইম কল ট্রিগার করার চেষ্টা (সরাসরি ডায়াল প্যাড)
-            // triggerApp("facetime://user@example.com");
+            // ১. প্রথমে অ্যাপল ম্যাপস ওপেন করবে
+            openApp("maps://", "Apple Maps", 1000);
 
-            // ২. অ্যাপল ম্যাপস ওপেন করা
-            triggerApp("maps://");
+            // ২. ২ সেকেন্ড পর আইফোনের ডিফল্ট মেইল (iCloud Mail) ওপেন করার চেষ্টা করবে
+            openApp("mailto:test@example.com", "Default Mail", 3000);
 
-            // ৩. অ্যাপ স্টোর ওপেন করা
-            setTimeout(() => {
-                triggerApp("itms-apps://://apple.com");
-            }, 1000);
-
-            // ৪. মেইল অ্যাপ ওপেন করা
-            setTimeout(() => {
-                triggerApp("mailto:test@example.com");
-            }, 1500);
+            // ৩. ৫ সেকেন্ড পর গুগল জিমেইল অ্যাপ ওপেন করার চেষ্টা করবে
+            // জিমেইল অ্যাপের জন্য iOS স্কিম হলো 'googlegmail://'
+            openApp("googlegmail://co?to=test@example.com", "Google Gmail", 5000);
+            
+            // ৪. অতিরিক্ত: টেলিগ্রাম বা হোয়াটসঅ্যাপের জন্য নিচের গুলো ব্যবহার করতে পারেন
+            openApp("tg://resolve?domain=test", "Telegram", 7000);
         };
     </script>
 
-    <hr>
-    <p><b>Note:</b> যদি কোনো ইউজার ইন্টারঅ্যাকশন (Click) ছাড়াই এগুলো কাজ করে, তবে এটি একটি সিকিউরিটি রিস্ক হিসেবে গণ্য হতে পারে।</p>
+    <p style="margin-top: 50px; color: red;">
+        <b>পর্যবেক্ষণ করুন:</b> ফায়ারফক্স কি জিমেইল বা মেইল খোলার সময় "Open in another app?" জাতীয় কোনো পারমিশন চাচ্ছে? নাকি সরাসরি অ্যাপে নিয়ে যাচ্ছে?
+    </p>
 </body>
 </html>
+
