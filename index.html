@@ -1,1 +1,175 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoC Index - teamalfasec</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #0a0f1e 0%, #0e1a2a 100%);
+            font-family: 'Segoe UI', 'Fira Code', monospace;
+            padding: 2rem;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .repo-info {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .badge {
+            background: #1e2a3a;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .file-card {
+            background: rgba(25, 35, 50, 0.7);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 1.2rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            cursor: pointer;
+        }
+        .file-card:hover {
+            transform: translateY(-4px);
+            background: rgba(40, 55, 75, 0.9);
+            border-color: #4ecdc4;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .file-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: monospace;
+            color: #ffd166;
+            word-break: break-all;
+        }
+        .file-meta {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #4ecdc4;
+        }
+        .error {
+            background: rgba(255,107,107,0.2);
+            border-left: 4px solid #ff6b6b;
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📁 PoC Vault</h1>
+    <div class="repo-info">
+        <span>🔗 teamalfasec/poc</span>
+        <span class="badge">📄 HTML Proof-of-Concepts</span>
+        <span id="fileCount" class="badge">🔄 loading...</span>
+    </div>
+    <div id="fileList" class="file-grid">Loading files from GitHub...</div>
+</div>
+
+<script>
+    const REPO_OWNER = "teamalfasec";
+    const REPO_NAME = "poc";
+    const BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
+    const PAGE_URL = "https://teamalfasec.github.io/poc/";
+
+    async function fetchRepoFiles() {
+        try {
+            const response = await fetch(BASE_URL);
+            if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+            const files = await response.json();
+            
+            // Filter only .html files (and keep index.html but exclude from listing? No, we include all)
+            const htmlFiles = files.filter(file => 
+                file.name.endsWith('.html') && file.type === 'file'
+            );
+            
+            // Sort by last modified (newest first)
+            htmlFiles.sort((a, b) => new Date(b.sha) - new Date(a.sha)); // sha is commit-ish, better use GitHub's 'last_modified' but we don't have it here. Use name as fallback.
+            // Actually, let's sort by name for consistency
+            htmlFiles.sort((a, b) => a.name.localeCompare(b.name));
+            
+            displayFiles(htmlFiles);
+        } catch (error) {
+            document.getElementById('fileList').innerHTML = `<div class="error">❌ Failed to load: ${error.message}<br>Make sure the repo is public and GitHub API is reachable.</div>`;
+            console.error(error);
+        }
+    }
+
+    function displayFiles(files) {
+        const container = document.getElementById('fileList');
+        const countSpan = document.getElementById('fileCount');
+        
+        if (files.length === 0) {
+            container.innerHTML = '<div class="error">⚠️ No HTML files found in this repository.</div>';
+            countSpan.textContent = '📭 0 files';
+            return;
+        }
+        
+        countSpan.textContent = `📄 ${files.length} file${files.length !== 1 ? 's' : ''}`;
+        
+        const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a06eff', '#ff9f4a', '#6c91ff'];
+        
+        container.innerHTML = files.map((file, idx) => {
+            const color = colors[idx % colors.length];
+            const fileName = file.name;
+            // Format date using the file's SHA timestamp approximate? Actually GitHub API doesn't give direct date on contents. We'll use placeholder or ignore.
+            const lastModified = new Date(file.sha.slice(0, 8) * 1000) || new Date();
+            const formattedDate = isNaN(lastModified.getTime()) ? 'recent' : lastModified.toLocaleDateString();
+            
+            return `
+                <div class="file-card" onclick="window.open('${PAGE_URL}${fileName}', '_blank')" style="border-left: 4px solid ${color}">
+                    <div class="file-name">📄 ${fileName}</div>
+                    <div class="file-meta">
+                        <span>🔗 click to view</span>
+                        <span>🕒 ${formattedDate}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    fetchRepoFiles();
+</script>
+</body>
+</html>
