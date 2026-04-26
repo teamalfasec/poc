@@ -1,16 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Deep Link Intent PoC</title>
+    <title>Multi-App Intent Redirection PoC</title>
 </head>
 <body>
     <h1>Testing Intent Redirection...</h1>
+    <p id="status">প্রথম অ্যাপ খোলার চেষ্টা করা হচ্ছে...</p>
+
     <script>
-        // পেজ লোড হওয়ার সাথে সাথে সেটিংস অ্যাপ খোলার চেষ্টা করবে
+        const apps = [
+            { name: "Telegram", url: "intent://#Intent;scheme=tg;package=org.telegram.messenger;end" },
+            { name: "Gmail", url: "intent://#Intent;scheme=mailto;package=com.google.android.gm;end" },
+            { name: "Calculator", url: "intent://#Intent;scheme=android-app;package=com.google.android.calculator;end" }
+        ];
+
+        let currentIndex = 0;
+
+        function openNextApp() {
+            if (currentIndex < apps.length) {
+                let app = apps[currentIndex];
+                document.getElementById("status").innerText = app.name + " খোলার চেষ্টা করা হচ্ছে...";
+                
+                // অ্যাপ ওপেন করার চেষ্টা
+                window.location.href = app.url;
+                
+                currentIndex++;
+                
+                // অল্প সময় পর পর পরবর্তী অ্যাপের জন্য তৈরি থাকা
+                // ইউজার ব্যাক করলে যেন পরেরটা ট্রিগার হয় (সব ব্রাউজারে কাজ নাও করতে পারে)
+                setTimeout(openNextApp, 3000); 
+            } else {
+                document.getElementById("status").innerText = "সবগুলো অ্যাপ ট্রাই করা শেষ।";
+            }
+        }
+
         window.onload = function() {
-            window.location = "intent://settings/#Intent;scheme=android-app;package=com.android.settings;end";
+            openNextApp();
         };
     </script>
-    <p>যদি কোনো ওয়ার্নিং ছাড়াই সেটিংস খুলে যায়, তবে Deep Link Handling এ সমস্যা আছে।</p>
+
+    <p><strong>নোট:</strong> যদি কোনো পারমিশন ছাড়াই অ্যাপগুলো একের পর এক খুলে যায়, তবে বুঝতে হবে ব্রাউজারের Deep Link Handling-এ সমস্যা আছে।</p>
 </body>
 </html>
