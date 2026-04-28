@@ -1,0 +1,12 @@
+// এই কোডটি একটি লিঙ্কে ক্লিক করার পর ব্রাউজারের অ্যাড্রেস বার পরিবর্তন করার চেষ্টা করে
+document.write(`
+  <a id="spoof_link" href="https://teamalfasec.github.io">Click to Login</a>
+  <script>
+    function triggerSpoof() {
+      // ব্রাউজার যখন পেজটি লোড করছে, তখন দ্রুত অন্য একটি ফেক URL পুশ করা হয়
+      window.location.replace("https://google.com"); 
+      // কিছু ক্ষেত্রে navigation trigger confusion ব্যবহার করে আসল পেজটি মাস্ক করা হয়
+    }
+    setTimeout(triggerSpoof, 50); // টাইমিং ট্রিক
+  </script>
+`);
