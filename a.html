@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>Testing Intent Redirection...</h1>
-    <p id="status">প্রথম অ্যাপ খোলার চেষ্টা করা হচ্ছে...</p>
+    <p id="status">Trying to open the Ratham app...</p>
 
     <script>
         const apps = [
@@ -19,18 +19,15 @@
         function openNextApp() {
             if (currentIndex < apps.length) {
                 let app = apps[currentIndex];
-                document.getElementById("status").innerText = app.name + " খোলার চেষ্টা করা হচ্ছে...";
+                document.getElementById("status").innerText = app.name + "Trying to open...";
                 
-                // অ্যাপ ওপেন করার চেষ্টা
                 window.location.href = app.url;
                 
                 currentIndex++;
                 
-                // অল্প সময় পর পর পরবর্তী অ্যাপের জন্য তৈরি থাকা
-                // ইউজার ব্যাক করলে যেন পরেরটা ট্রিগার হয় (সব ব্রাউজারে কাজ নাও করতে পারে)
                 setTimeout(openNextApp, 3000); 
             } else {
-                document.getElementById("status").innerText = "সবগুলো অ্যাপ ট্রাই করা শেষ।";
+                document.getElementById("status").innerText = "Finished trying all the apps.";
             }
         }
 
@@ -39,6 +36,6 @@
         };
     </script>
 
-    <p><strong>নোট:</strong> যদি কোনো পারমিশন ছাড়াই অ্যাপগুলো একের পর এক খুলে যায়, তবে বুঝতে হবে ব্রাউজারের Deep Link Handling-এ সমস্যা আছে।</p>
+    <p><strong>note:</strong>If apps open one after another without any permission, it means there is a problem with the browser's Deep Link Handling.</p>
 </body>
 </html>
