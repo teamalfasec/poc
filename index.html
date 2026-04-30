@@ -2,174 +2,584 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PoC Index - teamalfasec</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PoC Vault · teamalfasec/poc</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: linear-gradient(135deg, #0a0f1e 0%, #0e1a2a 100%);
-            font-family: 'Segoe UI', 'Fira Code', monospace;
-            padding: 2rem;
-            color: #e0e0e0;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, #0a0f1e, #07121f);
+            font-family: 'Inter', 'Segoe UI', 'Fira Code', monospace;
+            padding: 2rem 1.5rem;
+            color: #edf2ff;
+            min-height: 100vh;
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
+
+        /* header glow */
+        .hero {
+            margin-bottom: 2rem;
+        }
+
         h1 {
             font-size: 3rem;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            font-weight: 800;
+            background: linear-gradient(135deg, #F97316, #FACC15, #4ECDC4);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 0.5rem;
-            display: flex;
+            letter-spacing: -0.02em;
+            display: inline-flex;
             align-items: center;
-            gap: 1rem;
+            gap: 12px;
         }
-        .repo-info {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
+
+        .sub {
+            font-size: 1rem;
+            color: #8da3d0;
+            margin-top: 6px;
+            border-left: 3px solid #F97316;
+            padding-left: 14px;
+        }
+
+        /* stat cards */
+        .stats-bar {
             display: flex;
-            justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .badge {
-            background: #1e2a3a;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-family: monospace;
-        }
-        .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        .file-card {
-            background: rgba(25, 35, 50, 0.7);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 1.2rem;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(78, 205, 196, 0.2);
-            cursor: pointer;
-        }
-        .file-card:hover {
-            transform: translateY(-4px);
-            background: rgba(40, 55, 75, 0.9);
-            border-color: #4ecdc4;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 25, 45, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 0.9rem 1.8rem;
+            margin: 1.8rem 0 2rem 0;
+            border: 1px solid rgba(78, 205, 196, 0.25);
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
+
+        .repo-badge {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #1e2a3e;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            font-family: monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge i {
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .update-note {
+            background: #1e2a3a;
+            border-radius: 24px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: #bbd9ff;
+        }
+
+        /* file grid - neomorphic clean */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.4rem;
+            margin-top: 1rem;
+        }
+
+        .file-card {
+            background: rgba(22, 32, 48, 0.75);
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            padding: 1.2rem 1.2rem 1rem 1.2rem;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-card:hover {
+            transform: translateY(-4px);
+            background: rgba(30, 45, 70, 0.9);
+            border-color: #4ecdc4;
+            box-shadow: 0 18px 32px -12px rgba(0,0,0,0.5);
+        }
+
         .file-name {
             font-size: 1.2rem;
             font-weight: 600;
-            font-family: monospace;
-            color: #ffd166;
-            word-break: break-all;
+            font-family: 'Fira Code', monospace;
+            color: #FFD966;
+            word-break: break-word;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
         .file-meta {
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-            color: #aaa;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 0.7rem;
+            color: #a1b5dd;
         }
-        .loading {
+
+        .link-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            align-items: center;
+            justify-content: flex-end;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        .copy-btn, .open-btn {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            font-family: monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #cbd5f0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background: #2c5f6e;
+            color: white;
+        }
+
+        .open-btn:hover {
+            background: #f97316cc;
+            color: white;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2a3ecc;
+            backdrop-filter: blur(16px);
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-left: 4px solid #4ecdc4;
+            color: white;
+            z-index: 999;
+            transition: 0.2s;
+            pointer-events: none;
+            font-family: monospace;
+        }
+
+        .error-box {
+            background: rgba(255, 80, 80, 0.15);
+            border-radius: 28px;
+            padding: 1.6rem;
+            margin: 2rem 0;
+            border-left: 6px solid #ff5e5e;
+            backdrop-filter: blur(4px);
+        }
+
+        .retry-btn {
+            background: #ff8c5a;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            margin-top: 14px;
+            cursor: pointer;
+            color: #0a0f1e;
+        }
+
+        .loading-spinner {
             text-align: center;
             padding: 3rem;
             font-size: 1.2rem;
-            color: #4ecdc4;
+            color: #80e0d8;
         }
-        .error {
-            background: rgba(255,107,107,0.2);
-            border-left: 4px solid #ff6b6b;
-            padding: 1rem;
-            border-radius: 12px;
-            margin: 1rem 0;
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.7rem;
+            opacity: 0.6;
         }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .file-card {
+            animation: fadeIn 0.25s ease forwards;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>📁 PoC Vault</h1>
-    <div class="repo-info">
-        <span>🔗 teamalfasec/poc</span>
-        <span class="badge">📄 HTML Proof-of-Concepts</span>
-        <span id="fileCount" class="badge">🔄 loading...</span>
+    <div class="hero">
+        <h1>📁 PoC Vault</h1>
+        <div class="sub">real-time HTML proof-of-concepts · teamalfasec/poc</div>
     </div>
-    <div id="fileList" class="file-grid">Loading files from GitHub...</div>
+
+    <div class="stats-bar">
+        <div class="repo-badge">
+            <span class="badge">🔗 <i>teamalfasec/poc</i></span>
+            <span class="badge">📄 <span id="fileCountBadge">--</span> HTML exploits / demos</span>
+            <span class="badge">⚡ GitHub Pages direct</span>
+        </div>
+        <div class="update-note" id="updateTimestamp">
+            🔄 live from main branch
+        </div>
+    </div>
+
+    <div id="fileListContainer" class="file-grid">
+        <div class="loading-spinner">⏳ fetching latest PoC files from GitHub API ...</div>
+    </div>
+    <footer>
+        💡 Click card → open PoC in new tab &nbsp;|&nbsp; 🔗 click "copy link" to grab raw URL
+    </footer>
 </div>
 
 <script>
+    // -------------------------------
+    // CONFIGURATION
+    // -------------------------------
     const REPO_OWNER = "teamalfasec";
     const REPO_NAME = "poc";
-    const BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
-    const PAGE_URL = "https://teamalfasec.github.io/poc/";
+    const GITHUB_API_BASE = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
+    const PAGES_BASE = `https://${REPO_OWNER}.github.io/${REPO_NAME}/`;
 
-    async function fetchRepoFiles() {
-        try {
-            const response = await fetch(BASE_URL);
-            if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
-            const files = await response.json();
-            
-            // Filter only .html files (and keep index.html but exclude from listing? No, we include all)
-            const htmlFiles = files.filter(file => 
-                file.name.endsWith('.html') && file.type === 'file'
-            );
-            
-            // Sort by last modified (newest first)
-            htmlFiles.sort((a, b) => new Date(b.sha) - new Date(a.sha)); // sha is commit-ish, better use GitHub's 'last_modified' but we don't have it here. Use name as fallback.
-            // Actually, let's sort by name for consistency
-            htmlFiles.sort((a, b) => a.name.localeCompare(b.name));
-            
-            displayFiles(htmlFiles);
-        } catch (error) {
-            document.getElementById('fileList').innerHTML = `<div class="error">❌ Failed to load: ${error.message}<br>Make sure the repo is public and GitHub API is reachable.</div>`;
-            console.error(error);
-        }
+    // Cache buster to avoid aggressive browser cache of API? not required but useful
+    let retryAttempt = 0;
+
+    // Helper: show toast message (copy feedback)
+    function showToast(message, isError = false) {
+        let existingToast = document.querySelector('.toast-msg');
+        if(existingToast) existingToast.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.style.backgroundColor = isError ? '#aa2e2edd' : '#1d3542dd';
+        toast.style.borderLeftColor = isError ? '#ff8888' : '#4ecdc4';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 400);
+        }, 2200);
     }
 
-    function displayFiles(files) {
-        const container = document.getElementById('fileList');
-        const countSpan = document.getElementById('fileCount');
+    // format bytes / file size?
+    // GitHub API returns size in bytes (optional for meta)
+    function formatFileSize(bytes) {
+        if (!bytes) return '~ KB';
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024*1024)).toFixed(1) + ' MB';
+    }
+
+    // extract approximate last modified from GitHub API? 
+    // The /contents endpoint doesn't provide `last_modified` header easily, but we can fetch commit data lazily? 
+    // To keep fast and avoid rate limit we can use the file's sha + fallback: fallback order: 
+    // We actually can make second call to get commits? no, better display consistent without overloading.
+    // We'll enrich with "updated via repo" – but to show accurate date, GitHub API contents endpoint gives no date.
+    // Alternative: To have proper "last updated per file", we can do batch request to commits? but that may cause API limits.
+    // Solution: display "loaded from repo" and include a "last repo sync" timestamp. We'll also show dynamic "fresh from branch".
+    // But to satisfy "sob update file dekhay", we must guarantee we list all HTML files currently in main branch.
+    // Using contents API IS real-time from GitHub. So perfect. Will also show last commit for repo (optional indicator)
+    
+    async function fetchLatestCommitDate() {
+        try {
+            const commitsUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?per_page=1`;
+            const res = await fetch(commitsUrl);
+            if(res.ok) {
+                const data = await res.json();
+                if(data && data[0] && data[0].commit && data[0].commit.committer) {
+                    const lastCommitDate = new Date(data[0].commit.committer.date);
+                    return lastCommitDate.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+                }
+            }
+        } catch(e) { console.warn("commit date fetch skipped"); }
+        return null;
+    }
+
+    // core: fetch all files from repo contents root
+    async function fetchAllHTMLFiles() {
+        const url = GITHUB_API_BASE;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
         
-        if (files.length === 0) {
-            container.innerHTML = '<div class="error">⚠️ No HTML files found in this repository.</div>';
-            countSpan.textContent = '📭 0 files';
+        try {
+            const response = await fetch(url, {
+                signal: controller.signal,
+                headers: { 'Accept': 'application/vnd.github.v3+json' }
+            });
+            clearTimeout(timeoutId);
+            
+            if (response.status === 403) {
+                // Rate limit or forbidden: provide helpful message + suggest workaround
+                const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+                let errorDetails = `GitHub API error: 403 Forbidden. `;
+                if (rateLimitRemaining === '0') {
+                    errorDetails += `API rate limit exceeded! GitHub limits unauthenticated requests to 60 per hour. Try again later.`;
+                } else {
+                    errorDetails += `Access denied. Make sure repo is public. If you are in a restricted network, try VPN or use alternative.`;
+                }
+                throw new Error(errorDetails);
+            }
+            if (!response.ok) {
+                throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+            }
+            
+            const files = await response.json();
+            if (!Array.isArray(files)) {
+                throw new Error("Invalid API response format.");
+            }
+            
+            // filter: only html files (case-insensitive? but usually .html)
+            const htmlFiles = files.filter(file => 
+                file.type === 'file' && 
+                file.name.endsWith('.html') &&
+                !file.name.startsWith('.')   // ignore hidden
+            );
+            
+            // enrich each file with direct raw web url and page url
+            const enriched = htmlFiles.map(file => ({
+                name: file.name,
+                download_url: file.download_url,   // raw github content url
+                size: file.size,
+                sha: file.sha,
+                html_url: `${PAGES_BASE}${encodeURIComponent(file.name)}`,   // GitHub Pages url
+                api_path: file.path
+            }));
+            
+            // sort by name (case-insensitive) -> cleaner index
+            enriched.sort((a,b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+            return enriched;
+            
+        } catch(err) {
+            clearTimeout(timeoutId);
+            if(err.name === 'AbortError') {
+                throw new Error("Network timeout: GitHub API slow. Check connection.");
+            }
+            throw err;
+        }
+    }
+    
+    // render file cards with copy-link and open functions
+    function renderFileList(filesArray) {
+        const container = document.getElementById('fileListContainer');
+        const countSpan = document.getElementById('fileCountBadge');
+        
+        if (!filesArray.length) {
+            container.innerHTML = `<div class="error-box">
+                <strong>⚠️ No HTML proof-of-concept files found</strong><br>
+                Root directory of teamalfasec/poc contains 0 .html files.<br>
+                Make sure your PoC files are placed directly in the main branch root folder.
+                <div><button class="retry-btn" id="manualRetry">⟳ Refresh now</button></div>
+            </div>`;
+            countSpan.innerText = '0';
+            const retryBtn = document.getElementById('manualRetry');
+            if(retryBtn) retryBtn.addEventListener('click', () => loadAndDisplay());
             return;
         }
         
-        countSpan.textContent = `📄 ${files.length} file${files.length !== 1 ? 's' : ''}`;
+        countSpan.innerText = filesArray.length;
         
-        const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a06eff', '#ff9f4a', '#6c91ff'];
-        
-        container.innerHTML = files.map((file, idx) => {
-            const color = colors[idx % colors.length];
-            const fileName = file.name;
-            // Format date using the file's SHA timestamp approximate? Actually GitHub API doesn't give direct date on contents. We'll use placeholder or ignore.
-            const lastModified = new Date(file.sha.slice(0, 8) * 1000) || new Date();
-            const formattedDate = isNaN(lastModified.getTime()) ? 'recent' : lastModified.toLocaleDateString();
+        // Build cards with interactive wrapper
+        container.innerHTML = '';
+        filesArray.forEach(file => {
+            const card = document.createElement('div');
+            card.className = 'file-card';
             
-            return `
-                <div class="file-card" onclick="window.open('${PAGE_URL}${fileName}', '_blank')" style="border-left: 4px solid ${color}">
-                    <div class="file-name">📄 ${fileName}</div>
-                    <div class="file-meta">
-                        <span>🔗 click to view</span>
-                        <span>🕒 ${formattedDate}</span>
+            // format file size nicely
+            const sizeText = formatFileSize(file.size);
+            // generate a "short sha" for fun
+            const shortSha = file.sha ? file.sha.substring(0,7) : '···';
+            
+            // inner structure
+            card.innerHTML = `
+                <div class="file-name">
+                    📄 ${escapeHtml(file.name)}
+                </div>
+                <div class="file-meta">
+                    <span>📦 ${sizeText}</span>
+                    <span>🔑 ${shortSha}</span>
+                </div>
+                <div class="link-actions">
+                    <button class="copy-btn" data-url="${escapeAttr(file.html_url)}" data-filename="${escapeAttr(file.name)}">📋 Copy link</button>
+                    <button class="open-btn" data-url="${escapeAttr(file.html_url)}">🔗 Open in new tab</button>
+                </div>
+            `;
+            
+            // Add click on card itself: open in new tab (entire card click)
+            card.addEventListener('click', (e) => {
+                // prevent if click originated from buttons (avoid double open)
+                if(e.target.classList && (e.target.classList.contains('copy-btn') || e.target.classList.contains('open-btn'))) {
+                    return;
+                }
+                window.open(file.html_url, '_blank');
+                showToast(`🔓 opening ${file.name}`, false);
+            });
+            
+            // attach copy button event
+            const copyBtn = card.querySelector('.copy-btn');
+            copyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const urlToCopy = copyBtn.getAttribute('data-url');
+                if (!urlToCopy) return;
+                navigator.clipboard.writeText(urlToCopy).then(() => {
+                    showToast(`✅ Copied: ${file.name} URL`, false);
+                }).catch(() => {
+                    // fallback
+                    const textarea = document.createElement('textarea');
+                    textarea.value = urlToCopy;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showToast(`📋 Copied (fallback): ${file.name}`, false);
+                });
+            });
+            
+            // open button new tab
+            const openBtn = card.querySelector('.open-btn');
+            openBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open(file.html_url, '_blank');
+                showToast(`🔗 Opening ${file.name} in new tab`, false);
+            });
+            
+            container.appendChild(card);
+        });
+        
+        // optional: add timestamp indicator from repo if we have commit info
+        updateRepoMetadata();
+    }
+    
+    async function updateRepoMetadata() {
+        const dateStr = await fetchLatestCommitDate();
+        const timeSpan = document.getElementById('updateTimestamp');
+        if(dateStr) {
+            timeSpan.innerHTML = `🕒 last repo commit: ${dateStr} &nbsp;| ✨ live from main`;
+        } else {
+            timeSpan.innerHTML = `✅ direct from GitHub API (real-time) · refresh to sync`;
+        }
+    }
+    
+    // simple escapes
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+    
+    function escapeAttr(str) {
+        if(!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    }
+    
+    // main loading + error handling + retry mechanism
+    async function loadAndDisplay() {
+        const container = document.getElementById('fileListContainer');
+        container.innerHTML = `<div class="loading-spinner">⏳ refreshing PoC index · fetching HTML files from GitHub ...</div>`;
+        
+        try {
+            const files = await fetchAllHTMLFiles();
+            renderFileList(files);
+            // Also show a small note about update
+        } catch (error) {
+            console.error(error);
+            let errorMsg = error.message;
+            if (errorMsg.includes('403')) {
+                errorMsg = '❌ GitHub API 403: Rate limit or access denied. Since repo is public, unauthenticated requests are limited to 60 per hour. Please wait a few minutes or use a VPN/proxy. Also check if repo name is correct.';
+            } else if (errorMsg.includes('404')) {
+                errorMsg = '❌ Repository "teamalfasec/poc" not found or GitHub API unreachable. Verify the repo is public.';
+            } else if (errorMsg.includes('Network timeout')) {
+                errorMsg = '⏰ Connection timeout. Check your internet or GitHub API availability.';
+            }
+            container.innerHTML = `
+                <div class="error-box">
+                    <strong>⚠️ Failed to load PoC index</strong><br>
+                    ${escapeHtml(errorMsg)}<br>
+                    <div style="margin-top: 14px;">💡 Alternative: The repository should still be accessible via direct link:<br>
+                    <a href="https://github.com/teamalfasec/poc" target="_blank" style="color:#4ecdc4;">→ View on GitHub</a><br>
+                    <button class="retry-btn" id="errorRetryBtn" style="margin-top:12px;">⟳ Retry now</button>
                     </div>
                 </div>
             `;
-        }).join('');
+            const retryButton = document.getElementById('errorRetryBtn');
+            if(retryButton) retryButton.addEventListener('click', () => loadAndDisplay());
+            document.getElementById('fileCountBadge').innerText = 'err';
+        }
     }
     
-    fetchRepoFiles();
+    // Additional fallback: Add toggle for CORS? not needed, GitHub API supports CORS.
+    // Ensure that the index also automatically updates every 90 seconds? not needed, but manual refreshing is enough.
+    // Add manual refresh option on stats-bar?
+    function addRefreshWidget() {
+        const statsDiv = document.querySelector('.stats-bar');
+        if(statsDiv && !document.getElementById('manualRefreshBtn')) {
+            const refreshBtn = document.createElement('button');
+            refreshBtn.id = 'manualRefreshBtn';
+            refreshBtn.innerText = '⟳ refresh index';
+            refreshBtn.style.background = '#2c3e55';
+            refreshBtn.style.border = 'none';
+            refreshBtn.style.borderRadius = '40px';
+            refreshBtn.style.padding = '5px 16px';
+            refreshBtn.style.color = '#c5e0ff';
+            refreshBtn.style.fontFamily = 'monospace';
+            refreshBtn.style.cursor = 'pointer';
+            refreshBtn.style.marginLeft = '12px';
+            refreshBtn.style.fontSize = '0.75rem';
+            refreshBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                loadAndDisplay();
+                showToast('🔄 manually refreshing from GitHub API ...', false);
+            });
+            statsDiv.appendChild(refreshBtn);
+        }
+    }
+    
+    // run on load
+    window.addEventListener('DOMContentLoaded', () => {
+        loadAndDisplay();
+        addRefreshWidget();
+    });
 </script>
 </body>
 </html>
