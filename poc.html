@@ -1,41 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>iOS App Redirection Chain PoC</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Link POC - Auto Trigger</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f4f4f4; }
+        .status { font-size: 1.2em; color: #333; margin-bottom: 20px; }
+        .step { font-weight: bold; color: #007bff; }
+    </style>
 </head>
 <body>
-  <h2>iOS App Redirection Chain Test</h2>
-  <p id="status">Starting...</p>
 
-  <script>
-    const status = document.getElementById('status');
+    <h2>Deep Link Auto-Trigger POC</h2>
+    <div class="status" id="status-text">Starting in 2 seconds...</div>
+    <div id="countdown"></div>
 
-    function openApp(scheme, name, delay) {
-      setTimeout(() => {
-        status.innerText = "Attempting to open: " + name;
-        window.location.href = scheme;
-      }, delay);
-    }
+    <script>
+        const steps = [
+            { name: "SMS App", link: "sms:+1234567890", delay: 2000 },
+            { name: "Google Maps", link: "maps://maps.google.com/?q=San+Francisco", delay: 5000 },
+            { name: "Mail App", link: "mailto:test@example.com?subject=Test&body=Hello", delay: 5000 },
+            { name: "Web Search", link: "x-web-search://?q=test", delay: 5000 }
+        ];
 
-    window.onload = function () {
-      // 1. Apple Maps (after 1 sec)
-      openApp("googlegmail://co?to=attacker@gmail.com", "Gmail", 6000);
+        let currentStep = 0;
 
-      // 2. Gmail (after 6 sec)
-      openApp("maps://", "Apple Maps", 1000);
+        function triggerNext() {
+            if (currentStep < steps.length) {
+                let step = steps[currentStep];
+                document.getElementById('status-text').innerHTML = `Opening: <span class="step">${step.name}</span>`;
+                
+                // Deep link trigger
+                window.location.href = step.link;
 
-      // 3. Telegram (after 11 sec)
-      // openApp("tg://resolve?domain=telegram", "Telegram", 11000);
+                currentStep++;
+                if (currentStep < steps.length) {
+                    setTimeout(triggerNext, steps[currentStep].delay);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById('status-text').innerText = "All triggers completed.";
+                    }, 3000);
+                }
+            }
+        }
 
-      // 4. iOS Settings (after 16 sec)
-      openApp("app-settings:", "iOS Settings", 16000);
-    };
-  </script>
-
-  <p style="margin-top:40px;color:red;">
-    Deep Link Intent PoC<br>
-
-
-  </p>
+        // Initial delay to start
+        setTimeout(triggerNext, 2000);
+    </script>
 </body>
 </html>
